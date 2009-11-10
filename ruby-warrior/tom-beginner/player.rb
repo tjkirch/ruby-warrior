@@ -34,7 +34,6 @@ class Player
   end
 
   def act_on_empty_square!
-    ###debugger ###
     if @took_damage
       danger_action_for_empty!
     else
@@ -53,11 +52,30 @@ class Player
 
   # Take our time if we're not being attacked
   def safe_action_for_empty!
-    if hurt?
+    if safe_to_shoot?
+      @warrior.shoot!
+    elsif hurt? and (badly_hurt? or enemies_remaining?)
       @warrior.rest!
     else
       @warrior.walk!
     end
+  end
+
+  def safe_to_shoot?(direction = :forward)
+    @warrior.look(direction).each do |space|
+      return false if space.captive?
+      return true if space.enemy?
+    end
+    false
+  end
+
+  def enemies_remaining?
+    [:forward, :backward].each do |direction|
+      @warrior.look(direction).each do |space|
+        return true if space.enemy?
+      end
+    end
+    false
   end
 
   def hurt?
