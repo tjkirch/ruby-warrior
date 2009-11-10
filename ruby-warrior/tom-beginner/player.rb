@@ -6,21 +6,15 @@ class Player
     # It's my only grasp on reality
     @warrior = warrior
 
-    # Clear backward then forward
-    @direction ||= :backward
-    @reverse ||= :forward
-
     # Keep track of current/max health so we know if we're hurt
     @health = warrior.health
     @max_health ||= @health
     @last_health ||= 0
     @took_damage = @health >= @last_health ? false : @last_health - @health
 
-    if warrior.feel(@direction).wall?
-      toggle_direction
-    end
-
-    if warrior.feel(@direction).empty?
+    if warrior.feel.wall?
+      warrior.pivot!
+    elsif warrior.feel.empty?
       act_on_empty_square!
     else
       act_on_occupied_square!
@@ -32,10 +26,10 @@ class Player
   private
 
   def act_on_occupied_square!
-    if @warrior.feel(@direction).captive?
-      @warrior.rescue! @direction
+    if @warrior.feel.captive?
+      @warrior.rescue!
     else
-      @warrior.attack! @direction
+      @warrior.attack!
     end
   end
 
@@ -51,9 +45,9 @@ class Player
   # Being attacked - panic!!
   def danger_action_for_empty!
     if badly_hurt?
-      @warrior.walk! @reverse
+      @warrior.walk! :backward
     else
-      @warrior.walk! @direction
+      @warrior.walk!
     end
   end
 
@@ -62,7 +56,7 @@ class Player
     if hurt?
       @warrior.rest!
     else
-      @warrior.walk! @direction
+      @warrior.walk!
     end
   end
 
@@ -72,9 +66,5 @@ class Player
 
   def badly_hurt?
     @health < (@max_health / 3)
-  end
-
-  def toggle_direction
-    @direction, @reverse = @reverse, @direction
   end
 end
