@@ -1,26 +1,21 @@
 ###require 'ruby-debug'; Debugger.start ###
 
-# Notes: If there's only a wall ahead of you, you can turn around
-#        If you're not actively being attacked, don't just shoot!, charge them
+# Notes: If you're not actively being attacked, don't just shoot!, charge them
 
 class Player
   def play_turn(warrior)
 
     # Perform setup on first turn
-    @first_turn = defined? @warrior
+    @first_turn = !defined? @warrior
 
     # It's my only grasp on reality
     @warrior = warrior
 
-    # Keep track of current/max health so we know if we're hurt
-    @health = warrior.health
-    @max_health ||= @health
-    @last_health ||= 0
-    @took_damage = @health >= @last_health ? false : @last_health - @health
+    track_health
 
     if @first_turn and starting_direction != :forward 
       warrior.pivot!
-    elsif warrior.feel.wall?
+    elsif nothing_but_wall?
       warrior.pivot!
     elsif warrior.feel.empty?
       act_on_empty_square!
@@ -32,6 +27,13 @@ class Player
   end
 
   private
+
+  def track_health
+    @health = @warrior.health
+    @max_health ||= @health
+    @last_health ||= 0
+    @took_damage = @health >= @last_health ? false : @last_health - @health
+  end
 
   def starting_direction
     if see_stairs? :forward or see_captives? :backward
@@ -85,9 +87,17 @@ class Player
     false
   end
 
+  def nothing_but_wall?
+    @warrior.look.each do |space|
+      return false if space.stairs? or (!space.empty? and !space.wall?)
+      return true if space.wall?
+    end
+    false
+  end
+
   def visible?(directions = [:forward, :backward])
     directions.each do |direction|
-      @warrior.look(direction).each do |space|
+      @warrior.look(direction).each do |space|  ### can this just be any?
         return true if yield space
       end
     end
