@@ -1,7 +1,13 @@
 ###require 'ruby-debug'; Debugger.start ###
 
+# Notes: If there's only a wall ahead of you, you can turn around
+#        If you're not actively being attacked, don't just shoot!, charge them
+
 class Player
   def play_turn(warrior)
+
+    # Perform setup on first turn
+    @first_turn = defined? @warrior
 
     # It's my only grasp on reality
     @warrior = warrior
@@ -12,7 +18,9 @@ class Player
     @last_health ||= 0
     @took_damage = @health >= @last_health ? false : @last_health - @health
 
-    if warrior.feel.wall?
+    if @first_turn and starting_direction != :forward 
+      warrior.pivot!
+    elsif warrior.feel.wall?
       warrior.pivot!
     elsif warrior.feel.empty?
       act_on_empty_square!
@@ -24,6 +32,14 @@ class Player
   end
 
   private
+
+  def starting_direction
+    if see_stairs? :forward or see_captives? :backward
+      :backward
+    else 
+      :forward
+    end
+  end
 
   def act_on_occupied_square!
     if @warrior.feel.captive?
@@ -54,7 +70,7 @@ class Player
   def safe_action_for_empty!
     if safe_to_shoot?
       @warrior.shoot!
-    elsif hurt? and (badly_hurt? or enemies_remaining?)
+    elsif hurt? and (badly_hurt? or see_any_enemies?)
       @warrior.rest!
     else
       @warrior.walk!
@@ -69,13 +85,27 @@ class Player
     false
   end
 
-  def enemies_remaining?
-    [:forward, :backward].each do |direction|
+  def visible?(directions = [:forward, :backward])
+    directions.each do |direction|
       @warrior.look(direction).each do |space|
-        return true if space.enemy?
+        return true if yield space
       end
     end
     false
+  end
+
+  def see_any_enemies?
+    visible? { |s| s.enemy? }
+  end
+
+  def see_captives? directions
+    directions = [directions] unless directions.respond_to? :each
+    visible?(directions) { |s| s.captive? }
+  end
+
+  def see_stairs? directions
+    directions = [directions] unless directions.respond_to? :each
+    visible?(directions) { |s| s.stairs? }
   end
 
   def hurt?
