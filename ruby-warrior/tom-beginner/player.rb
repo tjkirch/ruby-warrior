@@ -7,14 +7,28 @@ class Player
 
   def play_turn(warrior)
 
-    # Determine if it's the first turn so we can perform setup
-    @first_turn = !defined? @warrior
-
-    # The warrior is my only grasp on reality, hold onto it
-    @warrior = warrior
+    unless defined? @warrior
+      @first_turn = true
+      set_up_warrior 
+    elsif @keep_first_turn
+      @first_turn = true
+      @keep_first_turn = false
+    else
+      @first_turn = false
+    end
 
     track_health
 
+    if in_danger?
+      @keep_first_turn = true if @first_turn
+      ###
+    elsif @first_turn
+      ###
+    else
+      ###
+    end
+
+=begin
     if @first_turn and starting_direction != :forward 
       warrior.pivot!
     elsif nothing_but_wall?
@@ -24,7 +38,9 @@ class Player
     else
       act_on_occupied_square!
     end
+=end
 
+    mark_seen
     @last_health = warrior.health
   end
 

@@ -1,10 +1,21 @@
 module ActiveWarrior
   module Helpers
 
-    def track_health
-      @health = @warrior.health
+    def set_up_warrior
+      @warrior = warrior
+
       @max_health ||= @health
       @last_health ||= 0
+
+      mark_seen
+    end
+
+    def mark_seen
+
+    end
+
+    def track_health
+      @health = @warrior.health
       @took_damage = @health >= @last_health ? false : @last_health - @health
     end
 
@@ -49,11 +60,13 @@ module ActiveWarrior
 
     def see_captives? directions
       directions = [directions] unless directions.respond_to? :each
+
       visible?(directions) { |s| s.captive? }
     end
 
     def see_stairs? directions
       directions = [directions] unless directions.respond_to? :each
+
       visible?(directions) { |s| s.stairs? }
     end
 
