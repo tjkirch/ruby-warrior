@@ -1,14 +1,10 @@
-###require 'ruby-debug'; Debugger.start ###
-
-# Notes: If you're not actively being attacked, don't just shoot!, charge them
-
 class Player
   def play_turn(warrior)
 
-    # Perform setup on first turn
+    # Determine if it's the first turn so we can perform setup
     @first_turn = !defined? @warrior
 
-    # It's my only grasp on reality
+    # The warrior is my only grasp on reality, hold onto it
     @warrior = warrior
 
     track_health
@@ -28,20 +24,7 @@ class Player
 
   private
 
-  def track_health
-    @health = @warrior.health
-    @max_health ||= @health
-    @last_health ||= 0
-    @took_damage = @health >= @last_health ? false : @last_health - @health
-  end
-
-  def starting_direction
-    if see_stairs? :forward or see_captives? :backward
-      :backward
-    else 
-      :forward
-    end
-  end
+  # Action methods
 
   def act_on_occupied_square!
     if @warrior.feel.captive?
@@ -59,7 +42,6 @@ class Player
     end
   end
 
-  # Being attacked - panic!!
   def danger_action_for_empty!
     if badly_hurt?
       @warrior.walk! :backward
@@ -68,7 +50,6 @@ class Player
     end
   end
 
-  # Take our time if we're not being attacked
   def safe_action_for_empty!
     if safe_to_shoot?
       @warrior.shoot!
@@ -76,6 +57,23 @@ class Player
       @warrior.rest!
     else
       @warrior.walk!
+    end
+  end
+
+  # Helper methods
+
+  def track_health
+    @health = @warrior.health
+    @max_health ||= @health
+    @last_health ||= 0
+    @took_damage = @health >= @last_health ? false : @last_health - @health
+  end
+
+  def starting_direction
+    if see_stairs? :forward or see_captives? :backward
+      :backward
+    else 
+      :forward
     end
   end
 
