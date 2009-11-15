@@ -28,18 +28,6 @@ class Player
       ###
     end
 
-=begin
-    if @first_turn and starting_direction != :forward 
-      warrior.pivot!
-    elsif nothing_but_wall?
-      warrior.pivot!
-    elsif warrior.feel.empty?
-      act_on_empty_square!
-    else
-      act_on_occupied_square!
-    end
-=end
-
     mark_seen
     @last_health = warrior.health
   end

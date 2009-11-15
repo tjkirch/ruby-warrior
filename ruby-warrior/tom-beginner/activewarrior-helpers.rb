@@ -7,18 +7,28 @@ module ActiveWarrior
       @max_health ||= @health
       @last_health ||= 0
 
+      @facing = :east
+      @moving = :east
+
+      @seen = []
       mark_seen
     end
 
-    def mark_seen
+    # Directional helpers
 
+    def absolute_facing(direction)
+      direction == :forward ? @facing : opposite_absolute(@facing)
     end
 
-    def track_health
-      @health = @warrior.health
-      @took_damage = @health >= @last_health ? false : @last_health - @health
+    def absolute_moving(direction)
+      direction == :forward ? @moving : opposite_absolute(@moving)
     end
 
+    def opposite_absolute(absolute)
+      ([:east, :west] - [absolute]).first
+    end
+
+    ### FIXME
     def starting_direction
       if see_stairs? :forward or see_captives? :backward
         :backward
@@ -29,6 +39,14 @@ module ActiveWarrior
 
     # Visibility checks
 
+    def mark_seen
+      [:backward, :forward].each do |direction|
+        if nothing_but_wall? direction
+          @seen << absolute_facing(direction)
+        end
+      end
+    end
+
     def safe_to_shoot?(direction = :forward)
       @warrior.look(direction).each do |space|
         return false if space.captive?
@@ -37,8 +55,8 @@ module ActiveWarrior
       false
     end
 
-    def nothing_but_wall?
-      @warrior.look.each do |space|
+    def nothing_but_wall?(direction = :forward)
+      @warrior.look(direction).each do |space|
         return false if space.stairs? or (!space.empty? and !space.wall?)
         return true if space.wall?
       end
@@ -70,6 +88,10 @@ module ActiveWarrior
       visible?(directions) { |s| s.stairs? }
     end
 
+    def seen_everything?
+      [:east, :west].all? { |dir| @seen.include? dir }
+    end
+
     # Health / damage checks
 
     def hurt?
@@ -83,6 +105,11 @@ module ActiveWarrior
     ### use this
     def strong_hit_threshhold
       @health / 4
+    end
+
+    def track_health
+      @health = @warrior.health
+      @took_damage = @health >= @last_health ? false : @last_health - @health
     end
 
   end
