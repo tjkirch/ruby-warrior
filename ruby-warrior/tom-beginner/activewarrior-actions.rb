@@ -1,6 +1,11 @@
 module ActiveWarrior
   module Actions
 
+    def defend!
+
+    end
+
+    ### needed?
     def act_on_occupied_square!
       if @warrior.feel.captive?
         @warrior.rescue!
@@ -9,6 +14,7 @@ module ActiveWarrior
       end
     end
 
+    ### needed?
     def act_on_empty_square!
       if @took_damage
         danger_action_for_empty!
@@ -17,6 +23,7 @@ module ActiveWarrior
       end
     end
 
+    ### needed?
     def danger_action_for_empty!
       if badly_hurt?
         @warrior.walk! :backward
@@ -25,6 +32,7 @@ module ActiveWarrior
       end
     end
 
+    ### needed?
     def safe_action_for_empty!
       if safe_to_shoot?
         @warrior.shoot!

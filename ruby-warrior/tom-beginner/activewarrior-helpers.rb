@@ -2,16 +2,22 @@ module ActiveWarrior
   module Helpers
 
     def set_up_warrior
-      @warrior = warrior
+      unless @warrior
+        @warrior = warrior
 
-      @max_health ||= @health
-      @last_health ||= 0
+        @max_health ||= @warrior.health
+        @last_health ||= 0
 
-      @facing = :east
-      @moving = :east
+        @facing = @moving = :east
 
-      @seen = []
+        @seen = []
+        mark_seen
+      end
+    end
+
+    def clean_up
       mark_seen
+      @last_health = warrior.health
     end
 
     # Directional helpers
@@ -110,6 +116,13 @@ module ActiveWarrior
     def track_health
       @health = @warrior.health
       @took_damage = @health >= @last_health ? false : @last_health - @health
+    end
+
+    # If we're in danger, heal once, since the player obviously wants
+    # some measure of health.  If we're not in danger, heal until full.
+    def heal_to_full!
+      @warrior.heal!
+      @lock_action = :heal_to_full! if not in_danger?
     end
 
   end

@@ -19,17 +19,25 @@ class Player
 
     track_health
 
-    if in_danger?
-      @keep_first_turn = true if @first_turn
-      ###
-    elsif @first_turn
-      ###
-    else
-      ###
+    # We can "lock in" to certain actions, like healing,
+    # to perform them repeatedly
+    if @lock_action
+      send @lock_action
+
+      # If the lock is still set, skip other actions
+      clean_up and return if @lock_action
     end
 
-    mark_seen
-    @last_health = warrior.health
+    if in_danger?
+      @keep_first_turn = true if @first_turn
+      defend!
+    elsif @first_turn
+      set_direction!
+    else
+      explore!
+    end
+
+    clean_up
   end
 
 end
