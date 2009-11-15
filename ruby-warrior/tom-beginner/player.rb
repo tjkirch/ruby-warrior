@@ -119,10 +119,15 @@ class Player
   end
 
   def hurt?
-    @health < @max_health
+    @health <= @max_health - (@max_health / 10)
   end
 
   def badly_hurt?
-    @health < (@max_health / 3)
+    @health < (@max_health / 2)
+  end
+
+  ### use this
+  def strong_hit_threshhold
+    @health / 4
   end
 end
