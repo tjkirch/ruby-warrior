@@ -9,7 +9,7 @@ class Player
 
     unless defined? @warrior
       @first_turn = true
-      set_up_warrior 
+      set_up_warrior(warrior)
     elsif @keep_first_turn
       @first_turn = true
       @keep_first_turn = false
@@ -19,13 +19,14 @@ class Player
 
     track_health
 
-    # We can "lock in" to certain actions, like healing,
-    # to perform them repeatedly
-    if @lock_action
-      send @lock_action
+    # We can queue actions as a form of memory.  We tell them the size of the
+    # queue so they can plan.  If it's zero, it was not a queued action.
+    unless @queued_actions.empty?
+      queue_size = @queued_actions.size
+      send(@queued_actions.shift, queue_size)
 
-      # If the lock is still set, skip other actions
-      clean_up and return if @lock_action
+      # If there are still queued actions, skip to next turn
+      clean_up and return unless @queued_actions.empty?
     end
 
     if in_danger?
