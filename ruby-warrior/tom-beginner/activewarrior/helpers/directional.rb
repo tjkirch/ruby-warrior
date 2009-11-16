@@ -6,7 +6,6 @@ module ActiveWarrior
         direction == :forward ? @facing : opposite_absolute(@facing)
       end
 
-      ### need?
       def absolute_moving(direction)
         direction == :forward ? @moving : opposite_absolute(@moving)
       end
@@ -15,13 +14,8 @@ module ActiveWarrior
         ([:east, :west] - [absolute]).first
       end
 
-      ### FIXME
-      def starting_direction
-        if see_stairs? :forward or see_captives? :backward
-          :backward
-        else 
-          :forward
-        end
+      def opposite_direction(direction)
+        ([:forward, :backward] - [direction]).first
       end
 
     end

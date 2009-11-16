@@ -30,8 +30,8 @@ module ActiveWarrior
           end
 
           def walk!(direction)
-            ### TODO
             super(direction)
+            @moving = absolute_moving(@moving)
           end
 
         end  # class << warrior

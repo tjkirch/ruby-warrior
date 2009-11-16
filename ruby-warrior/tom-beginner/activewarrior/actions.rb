@@ -44,49 +44,30 @@ module ActiveWarrior
     end
 
     def set_direction!
-      ### TODO
+      [:backward, :forward].each do |direction|
+        if nothing_but_wall?(direction) or (see_stairs? direction
+                                            and not seen_everything?)
+          @warrior.walk! opposite_direction(direction)
+          return
+        end
+      end
+
+      # If neither direction has a wall or stairs, just walk
+      @warrior.walk!
     end
 
     def explore!
-      ### TODO
-    end
-
-    ### needed?
-    def act_on_occupied_square!
-      if @warrior.feel.captive?
-        @warrior.rescue!
+      if dir = feel_any_captives?
+        @warrior.rescue! dir
+      elsif see_any_enemies?
+        ###
       else
-        @warrior.attack!
+        explore_open!
       end
     end
 
-    ### needed?
-    def act_on_empty_square!
-      if @took_damage
-        danger_action_for_empty!
-      else
-        safe_action_for_empty!
-      end
-    end
-
-    ### needed?
-    def danger_action_for_empty!
-      if badly_hurt?
-        @warrior.walk! :backward
-      else
-        @warrior.walk!
-      end
-    end
-
-    ### needed?
-    def safe_action_for_empty!
-      if safe_to_shoot?
-        @warrior.shoot!
-      elsif hurt? and (badly_hurt? or see_any_enemies?)
-        @warrior.rest!
-      else
-        @warrior.walk!
-      end
+    def explore_open!
+      ###
     end
 
     # Lock actions

@@ -29,7 +29,7 @@ module ActiveWarrior
       def touchable?(directions = [:forward, :backward])
         directions.each do |direction|
           @warrior.feel(direction).instance_eval do
-            return true if yield self
+            return direction if yield self
           end
         end
         false
@@ -39,6 +39,11 @@ module ActiveWarrior
         touchable? { |s| s.enemy? }
       end
 
+      def feel_any_captives?
+        touchable? { |s| s.captive? }
+      end
+
+      ### should return direction
       def visible?(directions = [:forward, :backward], &block)
         directions.any? do |direction|
           @warrior.look(direction).any? &block
