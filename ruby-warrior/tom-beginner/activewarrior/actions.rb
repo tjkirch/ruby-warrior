@@ -35,7 +35,7 @@ module ActiveWarrior
     end
 
     def defend_weak_ranged!
-      if badly_hurt? and safe_to_retreat?
+      if badly_hurt? and not safe_to_charge?
         @warrior.walk! opposite_absolute(nearest_enemy_direction)
         @queued_actions << :heal_to_full!
       else

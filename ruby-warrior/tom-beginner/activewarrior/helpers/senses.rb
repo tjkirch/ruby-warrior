@@ -73,9 +73,11 @@ module ActiveWarrior
               (spaces_behind[0].empty? && !spaces_behind[1].enemy?)
       end
 
-      # Safe to retreat from ranged combatant?
-      def safe_to_retreat?
-        ###
+      # Safe to retreat from ranged combatant?  It takes two turns to kill an
+      # archer in melee, plus one to move in.
+      def safe_to_charge?
+        d = nearest_enemy_distance
+        d <= 2 and @health > (@took_damage * (d + 1))
       end
 
       def in_danger?
