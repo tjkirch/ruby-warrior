@@ -62,7 +62,7 @@ module ActiveWarrior
         visible?(directions) { |s| s.captive? }
       end
 
-      def see_stairs?(directions)
+      def see_stairs?(directions = [:forward, :backward])
         directions = [directions] unless directions.respond_to? :each
 
         visible?(directions) { |s| s.stairs? }
