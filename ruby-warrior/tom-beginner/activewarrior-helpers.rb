@@ -19,6 +19,11 @@ module ActiveWarrior
           super
           @facing = opposite_absolute(@facing)
         end
+
+        def @warrior.walk!(direction)
+          ### TODO
+          super(direction)
+        end
       end
     end
 
@@ -116,17 +121,23 @@ module ActiveWarrior
       [:east, :west].all? { |dir| @seen.include? dir }
     end
 
+    # Safe to step back from melee combatant?
     def safe_to_step_back?
       spaces_behind = @warrior.look(:backward)[0..1]
 
-      spaces_behind.all? { |s| s.empty? } or
-        spaces_behind[0].empty? and not spaces_behind[1].enemy?
+      return spaces_behind.all? { |s| s.empty? } or
+             spaces_behind[0].empty? and not spaces_behind[1].enemy?
     end
 
-    def nearest_by_direction
+    # Safe to retreat from ranged combatant?
+    def safe_to_retreat?
+      ###
+    end
+
+    def nearest_for(&block)
       [:forward, :backward].each do |direction|
         @warrior.look(direction).each_with_index do |s, i|
-          if yield s
+          if block.call s
             nearest[:direction] = i
             break
           end
@@ -134,11 +145,23 @@ module ActiveWarrior
       end
 
       return nil if not nearest
-      nearest.sort_by { |k, v| v }.first.first
+      nearest.sort_by { |k, v| v }.first
+    end
+
+    def nearest_direction_for(&block)
+      nearest_for(&block)[0]
+    end
+
+    def nearest_distance_for(&block)
+      nearest_for(&block)[1]
     end
 
     def nearest_enemy_direction
-      nearest_by_direction { |s| s.enemy? }
+      nearest_direction_for { |s| s.enemy? }
+    end
+
+    def nearest_enemy_distance
+      nearest_distance_for { |s| s.enemy? }
     end
 
     # Health / damage checks

@@ -11,7 +11,7 @@ module ActiveWarrior
 
     def defend_melee!
       if badly_hurt? and safe_to_step_back?
-        @warrior.walk! :backward
+        @warrior.walk! opposite_absolute(nearest_enemy_direction)
         @queued_actions << :heal_to_full!
       else
         attack_close!
@@ -27,14 +27,27 @@ module ActiveWarrior
     end
 
     def defend_ranged!
-      if took_strong_hit?
+      if took_strong_hit?  # wizard
         @warrior.shoot! nearest_enemy_direction
       else
-        ###
+        defend_weak_ranged!
+      end
+    end
+
+    def defend_weak_ranged!
+      if badly_hurt? and safe_to_retreat?
+        @warrior.walk! opposite_absolute(nearest_enemy_direction)
+        @queued_actions << :heal_to_full!
+      else
+        @warrior.walk! nearest_enemy_direction
       end
     end
 
     def set_direction!
+      ### TODO
+    end
+
+    def explore!
       ### TODO
     end
 
