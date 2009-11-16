@@ -15,7 +15,7 @@ module ActiveWarrior
         @max_health ||= @warrior.health
         @last_health ||= 0
 
-        @facing = @moving = :east
+        @facing = @moving = @attacking = :east
 
         @queued_actions = []
 

@@ -43,24 +43,26 @@ module ActiveWarrior
         touchable? { |s| s.captive? }
       end
 
-      ### should return direction
-      def visible?(directions = [:forward, :backward], &block)
+      def visible?(directions = [:forward, :backward])
         directions.any? do |direction|
-          @warrior.look(direction).any? &block
+          @warrior.look(direction).each do |space|
+            return direction if yield space
+          end
         end
+        false
       end
 
       def see_any_enemies?
         visible? { |s| s.enemy? }
       end
 
-      def see_captives? directions
+      def see_captives?(directions)
         directions = [directions] unless directions.respond_to? :each
 
         visible?(directions) { |s| s.captive? }
       end
 
-      def see_stairs? directions
+      def see_stairs?(directions)
         directions = [directions] unless directions.respond_to? :each
 
         visible?(directions) { |s| s.stairs? }

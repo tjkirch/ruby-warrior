@@ -45,8 +45,8 @@ module ActiveWarrior
 
     def set_direction!
       [:backward, :forward].each do |direction|
-        if nothing_but_wall?(direction) or (see_stairs? direction
-                                            and not seen_everything?)
+        if nothing_but_wall?(direction) or (see_stairs? direction and
+                                            not seen_everything?)
           @warrior.walk! opposite_direction(direction)
           return
         end
@@ -57,29 +57,53 @@ module ActiveWarrior
     end
 
     def explore!
-      if dir = feel_any_captives?
-        @warrior.rescue! dir
-      elsif see_any_enemies?
-        ###
+      if direction = feel_any_captives?
+        @warrior.rescue! direction
+      elsif direction = see_any_enemies?
+        attack_ranged! direction
       else
         explore_open!
       end
     end
 
-    def explore_open!
-      ###
+    def attack_ranged!(direction)
+      if safe_to_shoot? direction
+        @attacking = direction
+        test_then_charge!
+      else
+        @warrior.walk! direction
+      end
     end
 
-    # Lock actions
+    def explore_open!
+      if stair_direction = see_stairs?
+        walk_toward_unseen! stair_direction
+      else 
+        @warrior.walk! @moving
+      end
+    end
+
+    # Make sure we've seen the other side before going toward stairs
+    def walk_toward_unseen!(stair_direction)
+      if @seen.include? opposite_absolute(absolute_moving(stair_direction))
+        @warrior.walk! stair_direction
+      else
+        @warrior.walk! opposite_direction(stair_direction)
+      end
+    end
+
+    # Queued actions.  You should break out of them by checking the queue size
+    # or some other condition guaranteed to change.
 
     # Assuming we're not in danger, heal until full.
     def heal_to_full!(queue_size)
-      unless in_danger?
+      unless in_danger? or not hurt?
         @warrior.heal!
         @queued_actions << :heal_to_full!
       end
     end
 
+    # Try to take out wizards ASAP; for others, attack head-on
     def test_back_then_pivot!(queue_size = 0)
       # On first call, shoot back to test for wizards.
       if queue_size == 0
@@ -89,6 +113,25 @@ module ActiveWarrior
       # If the enemy is still there, turn to attack.
       elsif @warrior.feel(:backward).enemy?
         @warrior.pivot!
+      end
+    end
+
+    def test_then_charge!(queue_size)
+      # On first call, shoot to test for wizards.
+      if queue_size == 0
+        @queued_actions << :test_then_charge!
+        @warrior.shoot! @attacking
+
+      # If an enemy is still there, charge.
+      elsif see_any_enemies?  ### should check for same spot
+        walk_toward_current_goal!
+      end
+    end
+
+    def walk_toward_current_goal!
+      unless in_danger? or not @warrior.feel(@moving).empty?
+        @queued_actions << :walk_toward_current_goal!
+        @warrior.walk! @moving
       end
     end
 
