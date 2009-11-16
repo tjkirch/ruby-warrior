@@ -47,13 +47,13 @@ module ActiveWarrior
       [:backward, :forward].each do |direction|
         if nothing_but_wall?(direction) or (see_stairs? direction and
                                             not seen_everything?)
-          @warrior.walk! opposite_direction(direction)
+          move! opposite_direction(direction)
           return
         end
       end
 
       # If neither direction has a wall or stairs, just walk
-      @warrior.walk!
+      move!
     end
 
     def explore!
@@ -79,17 +79,23 @@ module ActiveWarrior
       if stair_direction = see_stairs?
         walk_toward_unseen! stair_direction
       else 
-        @warrior.walk! @moving
+        move!
       end
     end
 
     # Make sure we've seen the other side before going toward stairs
     def walk_toward_unseen!(stair_direction)
       if @seen.include? opposite_absolute(absolute_moving(stair_direction))
-        @warrior.walk! stair_direction
+        move! stair_direction
       else
-        @warrior.walk! opposite_direction(stair_direction)
+        move! opposite_direction(stair_direction)
       end
+    end
+
+    # For non-combat moving, change our recorded direction
+    def move!(direction = @moving)
+      @moving = direction
+      @warrior.walk! direction
     end
 
     # Queued actions.  You should break out of them by checking the queue size
@@ -131,7 +137,7 @@ module ActiveWarrior
     def walk_toward_current_goal!
       unless in_danger? or not @warrior.feel(@moving).empty?
         @queued_actions << :walk_toward_current_goal!
-        @warrior.walk! @moving
+        move!
       end
     end
 

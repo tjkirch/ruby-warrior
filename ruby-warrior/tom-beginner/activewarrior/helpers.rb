@@ -21,22 +21,8 @@ module ActiveWarrior
 
         @seen = []
         mark_seen
-
-        # Define methods on warrior instance to handle directional tracking
-        class << @warrior
-          def pivot!
-            super
-            @facing = opposite_absolute(@facing)
-          end
-
-          def walk!(direction)
-            super(direction)
-            @moving = absolute_moving(@moving)
-          end
-
-        end  # class << warrior
-      end  # unless @warrior
-    end  # def set_up_warrior
+      end
+    end
 
     def clean_up
       mark_seen
