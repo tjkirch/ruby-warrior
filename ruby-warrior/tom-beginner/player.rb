@@ -1,5 +1,5 @@
-require 'activewarrior-helpers'
-require 'activewarrior-actions'
+require 'activewarrior/helpers'
+require 'activewarrior/actions'
 
 class Player
   include ActiveWarrior::Helpers
@@ -7,7 +7,7 @@ class Player
 
   def play_turn(warrior)
 
-    unless defined? @warrior
+    if not defined? @warrior
       @first_turn = true
       set_up_warrior(warrior)
     elsif @keep_first_turn
