@@ -17,6 +17,9 @@ class Player
       @first_turn = false
     end
 
+    # The warrior object passed in represents the current turn
+    @warrior = warrior
+
     track_health
 
     # We can queue actions as a form of memory.  We tell them the size of the
