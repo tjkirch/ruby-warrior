@@ -57,9 +57,9 @@ module ActiveWarrior
     end
 
     def explore!
-      if direction = feel_any_captives?
+      if (direction = feel_any_captives?)
         @warrior.rescue! direction
-      elsif direction = see_any_enemies?
+      elsif (direction = see_any_enemies?)
         attack_ranged! direction
       else
         explore_open!
@@ -76,7 +76,7 @@ module ActiveWarrior
     end
 
     def explore_open!
-      if stair_direction = see_stairs?
+      if (stair_direction = see_stairs?)
         walk_toward_unseen! stair_direction
       else 
         move!
