@@ -32,7 +32,7 @@ class Player
       clean_up and return unless @queued_actions.empty?
     end
 
-    if in_danger?
+    if in_danger? or (@first_turn and see_any_enemies?)
       @keep_first_turn = true if @first_turn
       defend!
     elsif @first_turn
