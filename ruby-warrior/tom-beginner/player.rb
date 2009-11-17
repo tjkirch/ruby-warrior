@@ -1,3 +1,7 @@
+# Notes: Currently shooting too much.  Need to be more aggressive and only
+#        shoot wizards.  Also, should more consistently check badly_hurt?
+#        Right now we'll walk_toward_current_goal! if on the brink. (lvl5)
+
 require 'activewarrior/helpers'
 require 'activewarrior/actions'
 
@@ -32,7 +36,7 @@ class Player
       clean_up and return unless @queued_actions.empty?
     end
 
-    if in_danger? or (@first_turn and see_any_enemies?)
+    if in_danger? or (@first_turn and safe_to_shoot?)
       @keep_first_turn = true if @first_turn
       defend!
     elsif @first_turn
