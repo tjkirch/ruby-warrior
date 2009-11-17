@@ -105,7 +105,7 @@ module ActiveWarrior
     # Assuming we're not in danger, heal until full.
     def heal_to_full!(queue_size = 0)
       unless in_danger? or not hurt?
-        @warrior.heal!
+        @warrior.rest!
         @queued_actions << :heal_to_full!
       end
     end
