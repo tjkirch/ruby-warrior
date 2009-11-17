@@ -11,7 +11,7 @@ module ActiveWarrior
 
     def defend_melee!
       if badly_hurt? and safe_to_step_back?
-        @warrior.walk! opposite_absolute(nearest_enemy_direction)
+        @warrior.walk! opposite_direction(nearest_enemy_direction)
         @queued_actions << :heal_to_full!
       else
         attack_close!
@@ -36,7 +36,7 @@ module ActiveWarrior
 
     def defend_weak_ranged!
       if badly_hurt? and not safe_to_charge?
-        @warrior.walk! opposite_absolute(nearest_enemy_direction)
+        @warrior.walk! opposite_direction(nearest_enemy_direction)
         @queued_actions << :heal_to_full!
       else
         @warrior.walk! nearest_enemy_direction
@@ -93,8 +93,8 @@ module ActiveWarrior
     end
 
     # For non-combat moving, change our recorded direction
-    def move!(direction = @moving)
-      @moving = direction
+    def move!(direction = relative_moving)
+      @moving = absolute_moving direction
       @warrior.walk! direction
     end
 
@@ -135,7 +135,7 @@ module ActiveWarrior
     end
 
     def walk_toward_current_goal!
-      unless in_danger? or not @warrior.feel(@moving).empty?
+      unless in_danger? or not @warrior.feel(relative_moving).empty?
         @queued_actions << :walk_toward_current_goal!
         move!
       end

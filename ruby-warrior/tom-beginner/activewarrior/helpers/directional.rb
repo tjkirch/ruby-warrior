@@ -10,6 +10,12 @@ module ActiveWarrior
         direction == :forward ? @moving : opposite_absolute(@moving)
       end
 
+      def relative_facing
+        @facing == @moving ? :forward : :backward
+      end
+
+      alias_method :relative_moving, :relative_facing
+
       def opposite_absolute(absolute)
         ([:east, :west] - [absolute]).first
       end

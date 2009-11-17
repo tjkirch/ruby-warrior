@@ -6,6 +6,7 @@ module ActiveWarrior
         [:backward, :forward].each do |direction|
           if nothing_but_wall? direction
             @seen << absolute_facing(direction)
+            @seen.uniq!
           end
         end
       end
@@ -92,10 +93,12 @@ module ActiveWarrior
       end
 
       def nearest_for(&block)
+        nearest = {}
+
         [:forward, :backward].each do |direction|
           @warrior.look(direction).each_with_index do |s, i|
             if block.call s
-              nearest[:direction] = i
+              nearest[direction] = i
               break
             end
           end
