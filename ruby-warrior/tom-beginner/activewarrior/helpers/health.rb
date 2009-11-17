@@ -11,7 +11,7 @@ module ActiveWarrior
       end
 
       def took_strong_hit?
-        @took_damage > @health / 4
+        (@took_damage || 0) > @health / 4
       end
 
       def track_health
