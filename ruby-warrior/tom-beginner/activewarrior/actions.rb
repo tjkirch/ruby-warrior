@@ -19,10 +19,19 @@ module ActiveWarrior
     end
 
     def attack_close!
+
       if @warrior.feel.enemy?
         @warrior.attack!
+
       elsif @warrior.feel(:backward).enemy?
-        test_back_then_pivot!
+
+        if @took_strong_hit  # wizard
+          @warrior.shoot! :backward
+        else
+          @warrior.pivot!
+          @facing = opposite_absolute :facing
+        end
+
       end
     end
 
@@ -67,12 +76,7 @@ module ActiveWarrior
     end
 
     def attack_ranged!(direction)
-      if safe_to_shoot? direction
-        @attacking = direction
-        test_then_charge!
-      else
-        @warrior.walk! direction
-      end
+      @warrior.walk! direction
     end
 
     def explore_open!
@@ -108,31 +112,6 @@ module ActiveWarrior
       unless in_danger? or not hurt?
         @warrior.rest!
         @queued_actions << :heal_to_full!
-      end
-    end
-
-    # Try to take out wizards ASAP; for others, attack head-on
-    def test_back_then_pivot!(queue_size = 0)
-      # On first call, shoot back to test for wizards.
-      if queue_size == 0
-        @queued_actions << :test_back_then_pivot!
-        @warrior.shoot! :backward
-
-      # If the enemy is still there, turn to attack.
-      elsif @warrior.feel(:backward).enemy?
-        @warrior.pivot!
-      end
-    end
-
-    def test_then_charge!(queue_size = 0)
-      # On first call, shoot to test for wizards.
-      if queue_size == 0
-        @queued_actions << :test_then_charge!
-        @warrior.shoot! @attacking
-
-      # If an enemy is still there, charge.
-      elsif see_any_enemies?  ### should check for same spot
-        walk_toward_current_goal!
       end
     end
 

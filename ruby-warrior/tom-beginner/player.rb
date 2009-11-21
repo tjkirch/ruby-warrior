@@ -1,5 +1,5 @@
-# Notes: Currently shooting too much.  Need to be more aggressive and only
-#        shoot wizards.
+# Notes: Too cautious about healing; only need full health to survive a
+#        wizard's hit.
 
 require 'activewarrior/helpers'
 require 'activewarrior/actions'
