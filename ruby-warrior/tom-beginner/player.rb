@@ -1,5 +1,8 @@
 # Notes: Too cautious about healing; only need full health to survive a
-#        wizard's hit.
+#        wizard's hit.  Don't walk backward to heal unless you can't kill
+#        the current enemy with current health.  However, if not in danger,
+#        badly hurt, AND see enemies, then heal to full.
+#        Would be nice to track which types of enemies you see.
 
 require 'activewarrior/helpers'
 require 'activewarrior/actions'
