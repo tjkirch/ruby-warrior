@@ -10,7 +10,7 @@ module ActiveWarrior
     end
 
     def defend_melee!
-      if badly_hurt? and safe_to_step_back?
+      if need_health_to_finish_current? and safe_to_step_back?
         @warrior.walk! opposite_direction(nearest_enemy_direction)
         @queued_actions << :heal_to_full!
       else

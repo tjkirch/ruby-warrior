@@ -6,6 +6,7 @@
 
 require 'activewarrior/helpers'
 require 'activewarrior/actions'
+require 'activewarrior/map'
 
 class Player
   include ActiveWarrior::Helpers
@@ -28,8 +29,8 @@ class Player
 
     track_health
 
-    # We can queue actions as a form of memory.  We tell them the size of the
-    # queue so they can plan.  If it's zero, it was not a queued action.
+    # We can queue actions as a form of memory.  We tell the action the size of
+    # the queue so they can plan.  If it's zero, it was not a queued action.
     unless @queued_actions.empty?
       queue_size = @queued_actions.size
       send(@queued_actions.shift, queue_size)

@@ -10,6 +10,10 @@ module ActiveWarrior
         @health < (@max_health / 2)
       end
 
+      def need_health_to_finish_current?
+        false ### TODO
+      end
+
       def took_strong_hit?
         (@took_damage || 0) > @health / 4
       end
