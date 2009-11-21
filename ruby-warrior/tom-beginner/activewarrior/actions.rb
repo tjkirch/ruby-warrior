@@ -100,7 +100,8 @@ module ActiveWarrior
 
     # Queued actions.  You should break out of them by checking the queue size
     # or some other condition guaranteed to change.  They should accept a queue
-    # size, with a default of 0.
+    # size, with a default of 0.  If no action is left in the queue, we'll drop
+    # through to normal processing.
 
     # Assuming we're not in danger, heal until full.
     def heal_to_full!(queue_size = 0)
@@ -136,10 +137,15 @@ module ActiveWarrior
     end
 
     def walk_toward_current_goal!(queue_size = 0)
-      unless in_danger? or not @warrior.feel(relative_moving).empty?
-        @queued_actions << :walk_toward_current_goal!
+      return if in_danger? or not @warrior.feel(relative_moving).empty?
+
+      if badly_hurt?
+        @warrior.rest!
+      else
         move!
       end
+
+      @queued_actions << :walk_toward_current_goal!
     end
 
   end

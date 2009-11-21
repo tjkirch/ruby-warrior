@@ -1,6 +1,5 @@
 # Notes: Currently shooting too much.  Need to be more aggressive and only
-#        shoot wizards.  Also, should more consistently check badly_hurt?
-#        Right now we'll walk_toward_current_goal! if on the brink. (lvl5)
+#        shoot wizards.
 
 require 'activewarrior/helpers'
 require 'activewarrior/actions'
